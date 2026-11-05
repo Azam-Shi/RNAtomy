@@ -4,14 +4,6 @@
 
 ### A Structure-Aware RNA Foundation Model for Transferable Structural and Functional Representations
 
-[![Python](https://img.shields.io/badge/python-3.10+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.x-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/)
-[![Mamba](https://img.shields.io/badge/backbone-Mamba%20%2B%20Shifted--Window%20Attention-6f4fb8)](https://github.com/state-spaces/mamba)
-[![Tasks](https://img.shields.io/badge/downstream%20tasks-7-14917f)](#downstream-tasks)
-[![License](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
-[![Paper](https://img.shields.io/badge/paper-coming%20soon-b0457a)](#citation)
-
-<img src="assets/overview.png" alt="RNAtomy overview" width="100%">
 
 </div>
 
