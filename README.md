@@ -274,8 +274,8 @@ block, so for RNAs longer than 128 nt a patch attends only within its window.
 
 | Resource | Link |
 |---|---|
-| Pretrained RNAtomy encoder | _coming soon_ |
-| Fine-tuned task heads | _coming soon_ |
+| Pretrained RNAtomy encoder |  |
+| Fine-tuned task heads |  |
 | Example trRosettaRNA map (`URS0000A0B8F6`, `L × L × 4`) | `assets/example/` |
 
 Downstream benchmarks are public: RNAsolvent/RNAsol (TR95/VL24/TS44), RNAcontact (ERNIE-RNA), bpRNA-1m and
