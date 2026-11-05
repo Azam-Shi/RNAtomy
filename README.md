@@ -282,22 +282,6 @@ Downstream benchmarks are public: RNAsolvent/RNAsol (TR95/VL24/TS44), RNAcontact
 RNA-km (TR0), DeepMirTar, PrismNet (17 RBPs, HeLa), Optimus 5-Prime (Random/Human 7600) and the structRFM IRES set.
 Please cite the original benchmark papers when you use them.
 
-## Citation
-
-If you use RNAtomy, please cite:
-
-```bibtex
-@article{shirali2026rnatomy,
-  title   = {RNAtomy: A Structure-Aware RNA Foundation Model for Transferable Structural and Functional Representations},
-  author  = {Shirali, Azam and Garg, Ishaan and Vasilyev, Andrey and Govindasamy, Parshatd and Mathee, Kalai and Chapagain, Prem and Narasimhan, Giri},
-  year    = {2026},
-  note    = {Preprint}
-}
-```
-
-## License
-
-Released under the [MIT License](LICENSE). DSSR, trRosettaRNA and the third-party benchmarks keep their own licences.
 
 ## Contact
 
@@ -305,4 +289,3 @@ Released under the [MIT License](LICENSE). DSSR, trRosettaRNA and the third-part
 Sciences, Florida International University
 📧 [ashir018@fiu.edu](mailto:ashir018@fiu.edu)
 
-Correspondence: **Giri Narasimhan** · 📧 [giri@fiu.edu](mailto:giri@fiu.edu)
