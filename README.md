@@ -66,6 +66,21 @@ Settings 2 and 3 are implemented by the scripts in [Downstream tasks](#downstrea
 | `nucleotide` | `[L, D]` | per-nucleotide tasks: accessibility, binding sites |
 | `pair` | `[L, L, D]` | pairwise tasks: contacts, base pairs |
 
+## Three ways to use RNAtomy
+
+The encoder is pretrained once and shared by all tasks. How it is used on top of that depends on the amount of
+labelled data and the accuracy required:
+
+| Setting | Backbone | Trained | Paper name | Suitable when |
+|---|---|---|---|---|
+| **1. Embeddings** | frozen | nothing, or a scikit-learn model on the vectors | | features are needed for clustering, retrieval or a quick baseline |
+| **2. Frozen backbone + light head** | frozen | a small task head | RNAtomy-FB | labels are scarce, or the goal is to measure how much the embedding already encodes |
+| **3. Full fine-tuning** | trainable | head and encoder together | RNAtomy | enough labels are available and the highest accuracy is needed |
+
+Settings 2 and 3 are implemented by the scripts in [Downstream tasks](#downstream-tasks). Setting 1 is
+[`embed.py`](embed.py).
+
+
 ## Installation
 
 RNAtomy needs a CUDA GPU because the Mamba blocks use the `mamba_ssm` kernels.
