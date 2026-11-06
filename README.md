@@ -285,23 +285,6 @@ Every script documents its own arguments and data format at the top of the file 
 
 Downstream benchmarks are public. Please cite the original benchmark papers when you use them.
 
-## Results
-
-Selected numbers from the paper. **FB** is the frozen backbone with a light head, **FT** is full fine-tuning. See the
-paper for every baseline.
-
-| Task | Metric | RNAtomy | Best compared method |
-|---|---|---|---|
-| Solvent accessibility (TS44) | PCC / SCC / MAE | **0.51** / **0.43** / **33.8** (FB) | RNAsol 0.43 / 0.42 / 34.0 |
-| Contact map | long-range precision, Top-L/10, L/5, L/2, L | **0.94 / 0.91 / 0.84 / 0.73** (FB) | strongest baseline lower by 5 / 3 / 3 / 7 points |
-| Long-range base pairs (TR0) | overall F1 / long-distance accuracy | **0.53** / **0.50** (FB) | RNA-km 0.52 / 0.23 |
-| RNA–RNA interaction | F1 / AUC | 0.876 / 0.915 (FB), 0.887 / 0.957 (FT) | RNAErnie 0.957 / 0.988 |
-| RNA–protein binding (17 RBPs) | mean AUPRC | 0.855 | ERNIE-RNA 0.865, RNA-FM 0.824 |
-| 5′UTR ribosome load | R² (Random / Human 7600) | 0.89 / 0.82 (FB), **0.95** / **0.88** (FT) | ERNIE-RNA-conv 0.92 / 0.86 |
-| IRES identification | AUROC / F1 | 0.64 / 0.64 (FB), **0.75** / **0.73** (FT) | highest AUROC and F1 among compared methods (FT) |
-
-On the long-range base-pair benchmark RNA-km stays stronger on pseudoknot-free pairs (0.61 against 0.56). On RNA–RNA
-interaction RNAtomy has the highest recall (0.961) but lower precision than RNAErnie.
 
 ### Predicted contact maps
 
