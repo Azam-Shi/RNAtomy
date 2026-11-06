@@ -54,7 +54,7 @@ The encoder is pretrained once and shared by all tasks. How it is used on top of
 labelled data and the accuracy required:
 
 | Setting | Backbone | Trained | Suitable when |
-|---|---|---|---|---|
+|---|---|---|---|
 | **1. Embeddings** | frozen | nothing, or a scikit-learn model on the vectors | features are needed for clustering, retrieval or a quick baseline |
 | **2. Frozen backbone + light head** | frozen | a small task head | labels are scarce, or the goal is to measure how much the embedding already encodes |
 | **3. Full fine-tuning** | trainable | head and encoder together | enough labels are available and the highest accuracy is needed |
