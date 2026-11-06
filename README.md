@@ -7,7 +7,7 @@
 [![Python](https://img.shields.io/badge/python-3.10+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.x-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/)
 [![Weights and data](https://img.shields.io/badge/Zenodo-10.5281%2Fzenodo.23968854-1682D4)](https://doi.org/10.5281/zenodo.23968854)
-[![Downstream tasks](https://img.shields.io/badge/downstream%20tasks-7-14917f)](#downstream-tasks)
+[![Downstream tasks](https://img.shields.io/badge/downstream%20tasks-7-14917f)](#applications)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
 
 
@@ -39,7 +39,7 @@ Three design choices set it apart:
 5. [Preparing inputs for your own RNAs](#preparing-inputs-for-your-own-rnas)
 6. [Embedding space](#embedding-space)
 7. [Pretraining](#pretraining)
-8. [Downstream tasks](#downstream-tasks)
+8. [Downstream tasks](#applications)
 9. [Results](#results)
 10. [Limitations](#limitations)
 11. [Repository layout](#repository-layout)
@@ -47,24 +47,6 @@ Three design choices set it apart:
 13. [License](#license)
 14. [Contact](#contact)
 
-## Three ways to use RNAtomy
-
-The encoder is trained once and never changes for your task. What you do on top of it is a choice:
-
-| Setting | Backbone | What you train | Paper name | Use it when |
-|---|---|---|---|---|
-| **1. Embeddings** | frozen | nothing, or a scikit-learn model on the vectors | | you want features for clustering, retrieval or a quick baseline |
-| **2. Frozen backbone + light head** | frozen | a small task head | RNAtomy-FB | labels are scarce, or you want to test how much the embedding already knows |
-| **3. Full fine-tuning** | trainable | head and encoder together | RNAtomy | you have enough labels and want the best accuracy |
-
-Settings 2 and 3 are implemented by the scripts in [Downstream tasks](#downstream-tasks). Setting 1 is
-[`embed.py`](embed.py).
-
-| Embedding level | Shape | Typical use |
-|---|---|---|
-| `pooled` | `[D]` | RNA-level tasks: family, function, regression on a whole RNA |
-| `nucleotide` | `[L, D]` | per-nucleotide tasks: accessibility, binding sites |
-| `pair` | `[L, L, D]` | pairwise tasks: contacts, base pairs |
 
 ## Three ways to use RNAtomy
 
@@ -77,7 +59,7 @@ labelled data and the accuracy required:
 | **2. Frozen backbone + light head** | frozen | a small task head | RNAtomy-FB | labels are scarce, or the goal is to measure how much the embedding already encodes |
 | **3. Full fine-tuning** | trainable | head and encoder together | RNAtomy | enough labels are available and the highest accuracy is needed |
 
-Settings 2 and 3 are implemented by the scripts in [Downstream tasks](#downstream-tasks). Setting 1 is
+Settings 2 and 3 are implemented by the scripts in [Downstream tasks](#applications). Setting 1 is
 [`embed.py`](embed.py).
 
 
