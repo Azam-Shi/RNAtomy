@@ -1,0 +1,7 @@
+# Install PyTorch (>= 2.0, CUDA build) first, then causal-conv1d and mamba-ssm, then this file.
+numpy
+scipy
+pandas
+scikit-learn
+matplotlib
+timm
