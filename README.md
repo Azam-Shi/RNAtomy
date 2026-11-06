@@ -16,10 +16,8 @@
 </div>
 
 **RNAtomy** is a self-supervised RNA foundation model that learns the structural *anatomy* of RNA from
-**inter-nucleotide geometry** and **residue-level conformational descriptors**, instead of from sequence or
-secondary structure alone. It is pretrained once on 200,158 RNAs from RNAcentral, and the resulting encoder is reused,
-frozen or fine-tuned, for structural, interaction and functional tasks. The pretraining set is much smaller than
-the corpora of the RNA language models it is compared against.
+**inter-nucleotide geometry** and **residue-level conformational descriptors**. It is pretrained once on ~200K RNAs from RNAcentral, and the resulting encoder is reused,
+frozen or fine-tuned, for structural, interaction, and functional tasks.
 
 Three design choices set it apart:
 
