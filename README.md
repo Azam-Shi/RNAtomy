@@ -1,9 +1,7 @@
-<div align="center">
  
 # RNAtomy: A Structure-Aware RNA Foundation Model for Transferable Structural and Functional Representations
 
 
-</div>
 
 **RNAtomy** is a self-supervised RNA foundation model that learns the structural *anatomy* of RNA directly from
 **inter-nucleotide geometry** and **residue-level conformational descriptors**, instead of from sequence or
