@@ -39,7 +39,7 @@ Three design choices set it apart:
 5. [Preparing inputs for your own RNAs](#preparing-inputs-for-your-own-rnas)
 6. [Embedding space](#embedding-space)
 7. [Pretraining](#pretraining)
-8. [Downstream tasks](#applications)
+8. [Applications](#applications)
 9. [Results](#results)
 10. [Limitations](#limitations)
 11. [Repository layout](#repository-layout)
