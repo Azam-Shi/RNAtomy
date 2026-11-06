@@ -259,59 +259,7 @@ pairs with |i − j| ≥ 24 are labelled and scored, so the signal near the diag
 
 <img src="imgs/testset_gallery.png" alt="Ground-truth and predicted long-range contact maps for ten test RNAs" width="100%">
 
-## Limitations
 
-- **Static structure.** Each RNA is represented by one predicted pairwise map and one set of descriptors, so
-  conformational ensembles, ligand-induced changes and cellular conditions are not modelled.
-- **Predicted inputs.** The inputs come from trRosettaRNA and DSSR. Their errors propagate, and computing them is the
-  expensive step for a new RNA.
-- **Length range.** Pretraining used RNAs of 50–1,024 nt. Longer RNAs are handled by overlapping windows.
-- **Training distribution.** rRNA and tRNA make up about 60% of the candidate pretraining sequences.
-- **Scope of validation.** The model was evaluated on the seven tasks above only.
-
-See [`MODEL_CARD.md`](MODEL_CARD.md) for intended use and details.
-
-## Repository layout
-
-```text
-RNAtomy/
-├── embed.py                      # embeddings from maps (+ descriptors): command line and Python API
-├── pretraining_model/
-│   ├── pretrain.py               # self-supervised pretraining
-│   ├── engine.py  datasets.py  utils.py
-│   └── pretrained_model/         # where to put rnatomy.pth (Zenodo link inside)
-├── models/
-│   ├── hybridnet.py              # Mamba + shifted-window attention backbone, FiLM, descriptor encoder
-│   ├── rna_encoder.py            # RNAEncoder: loads a checkpoint and exposes the encode_* outputs
-│   └── heads/                    # task heads: contact map, RSA, long-range BP, RRI, RBP, MRL, IRES
-├── finetune/                     # dataset classes, shared arguments, train/validation loops, IRES ensembling
-├── finetune_<task>.py            # one fine-tuning script per downstream task
-├── Final_extacting_dssr.py       # DSSR -> 23-d residue descriptors (feat1d_norm.npy)
-├── imgs/                         # figures used in this README
-├── MODEL_CARD.md
-└── requirements.txt
-```
-
-## Citation
-
-If you use RNAtomy, please cite the paper and, if you use the weights or data, the Zenodo record:
-
-```bibtex
-@article{shirali2026rnatomy,
-  title   = {RNAtomy: A Structure-Aware RNA Foundation Model for Transferable Structural and Functional Representations},
-  author  = {Shirali, Azam and Garg, Ishaan and Vasilyev, Andrey and Soni, Pavitra and Govindasamy, Parshatd and Mathee, Kalai and Chapagain, Prem and Narasimhan, Giri},
-  year    = {2026},
-  note    = {Preprint}
-}
-
-@misc{rnatomy_zenodo,
-  title     = {RNAtomy: pretrained weights and pretraining data},
-  author    = {Shirali, Azam and Garg, Ishaan and Vasilyev, Andrey and Soni, Pavitra and Govindasamy, Parshatd and Mathee, Kalai and Chapagain, Prem and Narasimhan, Giri},
-  year      = {2026},
-  publisher = {Zenodo},
-  doi       = {10.5281/zenodo.23968854}
-}
-```
 
 ## License
 
