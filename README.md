@@ -1,8 +1,6 @@
 <div align="center">
-
-# RNAtomy
-
-### A Structure-Aware RNA Foundation Model for Transferable Structural and Functional Representations
+ 
+# RNAtomy: A Structure-Aware RNA Foundation Model for Transferable Structural and Functional Representations
 
 
 </div>
