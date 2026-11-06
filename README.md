@@ -9,7 +9,7 @@
 [![Weights and data](https://img.shields.io/badge/Zenodo-10.5281%2Fzenodo.23968854-1682D4)](https://doi.org/10.5281/zenodo.23968854)
 [![Downstream tasks](https://img.shields.io/badge/downstream%20tasks-7-14917f)](#downstream-tasks)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
-[![Paper](https://img.shields.io/badge/paper-coming%20soon-b0457a)](#citation)
+
 
 <img src="imgs/model_overview.png" alt="RNAtomy overview" width="100%">
 
