@@ -62,6 +62,3 @@ for the available tasks and options.
 | Attention heads | 12 |
 | Inputs | trRosettaRNA pairwise map (4 channels) + 23-d DSSR residue descriptors |
 
-## Citation
-
-If you use these weights or data, please cite the RNAtomy paper (see the main README) and the Zenodo record above.
