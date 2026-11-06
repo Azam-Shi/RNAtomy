@@ -217,15 +217,6 @@ The objective is `L = L_2D + λ_1D · L_1D`:
 - `L_1D` reconstructs the 23 descriptors of masked spans: a cosine loss on the sine/cosine angles, a Huber loss on the
   continuous descriptors and binary cross-entropy on the structural indicators.
 
-**Does the descriptor track matter?** On a homology-filtered held-out set of 1,323 RNAs, adding residue-wise
-conditioning lowers the pairwise-map reconstruction error at both widths, and the larger model helps both variants.
-
-| Configuration | Width | Parameters | Reconstruction MSE ↓ |
-|---|---:|---:|---:|
-| Pairwise only | 768 | 74.4M | 0.18 |
-| Pairwise only | 512 | 33.1M | 0.25 |
-| Pairwise + residue-wise | 768 | 75.6M | **0.11** |
-| Pairwise + residue-wise | 512 | 34.3M | 0.17 |
 
 ## Applications
 
