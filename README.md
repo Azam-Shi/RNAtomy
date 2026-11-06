@@ -35,7 +35,7 @@ Three design choices set it apart:
 1. [Three ways to use RNAtomy](#three-ways-to-use-rnatomy)
 2. [Installation](#installation)
 3. [Pretrained weights and data](#pretrained-weights-and-data)
-4. [Quick start: extract embeddings](#quick-start-extract-embeddings)
+4. [Extract embeddings](#quick-start-extract-embeddings)
 5. [Preparing inputs for your own RNAs](#preparing-inputs-for-your-own-rnas)
 6. [Embedding space](#embedding-space)
 7. [Pretraining](#pretraining)
@@ -103,7 +103,7 @@ public archives such as Zenodo. To support re-pretraining, ablations, and reprod
 
 
 
-## Quick start: extract embeddings
+## Extract embeddings
 
 ```python
 import numpy as np
