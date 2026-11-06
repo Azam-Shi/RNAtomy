@@ -219,15 +219,15 @@ Every task script loads the pretrained encoder (`--pretrain-ckpt`), attaches a t
 (`--freeze-backbone`, RNAtomy-FB), the last *n* blocks, or the full network (RNAtomy). Validation picks the best
 epoch, and the test set is evaluated once.
 
-| # | Task | Script | Level | Benchmark | Metric |
-|---|---|---|---|---|---|
-| 1 | Solvent accessibility | `finetune_rsa.py` | nucleotide | RNAsol (TR89 / TS44) | PCC, SCC, MAE (Å²) |
-| 2 | 3D contact maps | `finetune_contact_map.py` | nucleotide pair | RNAcontact (TR221 / TE80) | long-range Top-L/k precision |
-| 3 | Long-range base pairs | `finetune_lrbp.py` | nucleotide pair | bpRNA-1m TR0, RNA-km protocol | F1 (overall, PK classes, long-distance) |
-| 4 | RNA–RNA interaction | `finetune_rri.py` | RNA pair | DeepMirTar / MirTarRAW | accuracy, F1, AUC |
-| 5 | RNA–protein binding | `finetune_rna_protein.py` | nucleotide / RNA | PrismNet, 17 HeLa RBPs | AUPRC |
-| 6 | 5′UTR ribosome load | `finetune_utr_mrl.py` | RNA | Optimus 5-Prime (Random / Human 7600) | R² |
-| 7 | IRES identification | `finetune_ires.py` | RNA | structRFM IRES set | accuracy, F1, MCC, AUROC |
+| # | Task | Script | Level |
+|---|---|---|---|
+| 1 | Solvent accessibility | `finetune_rsa.py` | nucleotide |
+| 2 | 3D contact maps | `finetune_contact_map.py` | nucleotide pair |
+| 3 | Long-range base pairs | `finetune_lrbp.py` | nucleotide pair |
+| 4 | RNA–RNA interaction | `finetune_rri.py` | RNA pair |
+| 5 | RNA–protein binding | `finetune_rna_protein.py` | nucleotide / RNA |
+| 6 | 5′UTR ribosome load | `finetune_utr_mrl.py` | RNA |
+| 7 | IRES identification | `finetune_ires.py` | RNA |
 
 Example: contact-map prediction with a frozen backbone.
 
