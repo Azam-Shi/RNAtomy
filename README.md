@@ -184,31 +184,8 @@ keyword matching, sampled to over-represent rarer classes, clustered with CD-HIT
 and filtered to 50–1,024 nt with complete structural features. The result is 200,158 RNAs, split 180,142 for
 training and 20,016 for validation.
 
-<details>
-<summary><b>RNA-type composition of the candidate collection (391,845 sequences before the length and quality filters)</b></summary>
 
-| RNA type | Source (%) | Revised count | Revised (%) |
-|---|---:|---:|---:|
-| rRNA | 56.47 | 149,542 | 38.16 |
-| tRNA | 14.72 | 84,014 | 21.44 |
-| lncRNA | 9.46 | 59,579 | 15.20 |
-| Other | 10.38 | 39,570 | 10.10 |
-| miRNA | 2.18 | 12,782 | 3.26 |
-| snoRNA | 1.45 | 8,759 | 2.24 |
-| ncRNA | 1.28 | 8,560 | 2.18 |
-| snRNA | 1.18 | 7,732 | 1.97 |
-| SRP RNA | 1.10 | 5,664 | 1.45 |
-| Ribozyme | 0.69 | 4,709 | 1.20 |
-| mRNA | 0.48 | 3,368 | 0.86 |
-| RNase RNA | 0.38 | 2,953 | 0.75 |
-| Antisense RNA | 0.15 | 1,854 | 0.47 |
-| Y RNA | 0.06 | 1,157 | 0.30 |
-| Vault RNA | < 0.01 | 834 | 0.21 |
-| Telomerase RNA | < 0.01 | 768 | 0.20 |
-
-</details>
-
-**Run.**
+**Run:**
 
 ```bash
 torchrun --nproc_per_node 4 pretraining_model/pretrain.py \
