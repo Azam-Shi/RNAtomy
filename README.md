@@ -7,7 +7,7 @@
 [![Python](https://img.shields.io/badge/python-3.10+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.x-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/)
 [![Weights and data](https://img.shields.io/badge/Zenodo-10.5281%2Fzenodo.23968854-1682D4)](https://doi.org/10.5281/zenodo.23968854)
-[![Downstream tasks](https://img.shields.io/badge/downstream%20tasks-7-14917f)](#applications)
+[![Applications](https://img.shields.io/badge/downstream%20tasks-7-14917f)](#applications)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
 
 
@@ -59,7 +59,7 @@ labelled data and the accuracy required:
 | **2. Frozen backbone + light head** | frozen | a small task head | RNAtomy-FB | labels are scarce, or the goal is to measure how much the embedding already encodes |
 | **3. Full fine-tuning** | trainable | head and encoder together | RNAtomy | enough labels are available and the highest accuracy is needed |
 
-Settings 2 and 3 are implemented by the scripts in [Downstream tasks](#applications). Setting 1 is
+Settings 2 and 3 are implemented by the scripts in [Applications](#applications). Setting 1 is
 [`embed.py`](embed.py).
 
 
@@ -245,7 +245,7 @@ conditioning lowers the pairwise-map reconstruction error at both widths, and th
 | Pairwise + residue-wise | 768 | 75.6M | **0.11** |
 | Pairwise + residue-wise | 512 | 34.3M | 0.17 |
 
-## Downstream tasks
+## Applications
 
 Every task script loads the pretrained encoder (`--pretrain-ckpt`), attaches a task head, and trains the head alone
 (`--freeze-backbone`, RNAtomy-FB), the last *n* blocks, or the full network (RNAtomy). Validation picks the best
