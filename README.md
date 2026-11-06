@@ -171,11 +171,6 @@ families are used only to color the points.
 
 <img src="imgs/embed_families.png" alt="t-SNE of RNAtomy embeddings colored by RNA family" width="100%">
 
-<details>
-<summary><b>More Rfam subsets (top 100, 80, 60, 40, 20 and 10 families)</b></summary>
-<br>
-<img src="imgs/embed_top_families.png" alt="t-SNE of RNAtomy embeddings for the 100 to 10 most populated Rfam families" width="100%">
-</details>
 
 ## Pretraining
 
