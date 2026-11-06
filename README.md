@@ -382,7 +382,7 @@ If you use RNAtomy, please cite the paper and, if you use the weights or data, t
 ## License
 
 Code is released under the [MIT License](LICENSE). The weights and data on Zenodo are released under CC BY 4.0.
-DSSR, trRosettaRNA and the third-party benchmarks keep their own licences.
+DSSR, trRosettaRNA and the third-party benchmarks keep their own licenses.
 
 ## Contact
 
@@ -390,4 +390,3 @@ DSSR, trRosettaRNA and the third-party benchmarks keep their own licences.
 Sciences, Florida International University
 📧 [ashir018@fiu.edu](mailto:ashir018@fiu.edu)
 
-Correspondence: **Giri Narasimhan** · 📧 [giri@fiu.edu](mailto:giri@fiu.edu)
