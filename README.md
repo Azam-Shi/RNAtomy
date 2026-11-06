@@ -30,18 +30,6 @@ Three design choices set it apart:
 3. **Axis-aware FiLM.** Nucleotide-level conformations modulate the row and column axes of the pairwise tokens
    separately, so position (*i*, *j*) is distinguished from (*j*, *i*).
 
-## The model at a glance
-
-| | |
-|---|---|
-| Parameters | 75.6M |
-| Backbone | 16 blocks, 4 × (3 bidirectional Mamba + 1 shifted-window attention), width 768, 12 heads, window 16 × 16 patches |
-| Input | trRosettaRNA pairwise map `L × L × 4` + DSSR residue descriptors `L × 23` (optional at inference) |
-| Pretraining data | 200,158 RNAs of 50–1,024 nt (180,142 train / 20,016 validation), 16 RNA categories |
-| Pretraining objective | masked reconstruction of the pairwise map and of the residue descriptors, `L = L_2D + 0.5 · L_1D` |
-| Compute | 4 × NVIDIA A100 80 GB, about 85 hours |
-| Outputs | whole-RNA, per-nucleotide, per-pair and patch-token embeddings (768-d) |
-
 ## Table of Contents
 
 1. [Three ways to use RNAtomy](#three-ways-to-use-rnatomy)
