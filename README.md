@@ -1,12 +1,25 @@
- 
-# RNAtomy: A Structure-Aware RNA Foundation Model for Transferable Structural and Functional Representations
+<div align="center">
 
+# RNAtomy
 
+### A Structure-Aware RNA Foundation Model for Transferable Structural and Functional Representations
 
-**RNAtomy** is a self-supervised RNA foundation model that learns the structural *anatomy* of RNA directly from
+[![Python](https://img.shields.io/badge/python-3.10+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.x-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![Weights and data](https://img.shields.io/badge/Zenodo-10.5281%2Fzenodo.23968854-1682D4)](https://doi.org/10.5281/zenodo.23968854)
+[![Downstream tasks](https://img.shields.io/badge/downstream%20tasks-7-14917f)](#downstream-tasks)
+[![License](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
+[![Paper](https://img.shields.io/badge/paper-coming%20soon-b0457a)](#citation)
+
+<img src="imgs/model_overview.png" alt="RNAtomy overview" width="100%">
+
+</div>
+
+**RNAtomy** is a self-supervised RNA foundation model that learns the structural *anatomy* of RNA from
 **inter-nucleotide geometry** and **residue-level conformational descriptors**, instead of from sequence or
-secondary structure alone. It is pretrained on 391,845 non-redundant RNAs from RNAcentral spanning 16 RNA categories,
-a much smaller corpus than those used by the RNA language models it is compared against.
+secondary structure alone. It is pretrained once on 200,158 RNAs from RNAcentral, and the resulting encoder is reused,
+frozen or fine-tuned, for structural, interaction and functional tasks. The pretraining set is much smaller than
+the corpora of the RNA language models it is compared against.
 
 Three design choices set it apart:
 
@@ -19,66 +32,53 @@ Three design choices set it apart:
 3. **Axis-aware FiLM.** Nucleotide-level conformations modulate the row and column axes of the pairwise tokens
    separately, so position (*i*, *j*) is distinguished from (*j*, *i*).
 
-RNAtomy is evaluated on seven structural, interaction and functional tasks (see [Results](#results)). The same
-pretrained encoder can produce per-pair, per-nucleotide, per-patch or whole-RNA embeddings.
+## The model at a glance
 
----
+| | |
+|---|---|
+| Parameters | 75.6M |
+| Backbone | 16 blocks, 4 × (3 bidirectional Mamba + 1 shifted-window attention), width 768, 12 heads, window 16 × 16 patches |
+| Input | trRosettaRNA pairwise map `L × L × 4` + DSSR residue descriptors `L × 23` (optional at inference) |
+| Pretraining data | 200,158 RNAs of 50–1,024 nt (180,142 train / 20,016 validation), 16 RNA categories |
+| Pretraining objective | masked reconstruction of the pairwise map and of the residue descriptors, `L = L_2D + 0.5 · L_1D` |
+| Compute | 4 × NVIDIA A100 80 GB, about 85 hours |
+| Outputs | whole-RNA, per-nucleotide, per-pair and patch-token embeddings (768-d) |
 
 ## Table of Contents
 
-1. [Features](#features)
-2. [Repository layout](#repository-layout)
-3. [Installation](#installation)
-4. [Input features](#input-features)
-5. [Quick start: use the encoder](#quick-start-use-the-encoder)
-6. [Pretraining](#pretraining)
-7. [Downstream tasks](#downstream-tasks)
-8. [Results](#results)
-9. [Interpreting the model](#interpreting-the-model)
-10. [Checkpoints and data](#checkpoints-and-data)
-11. [Citation](#citation)
-12. [License](#license)
-13. [Contact](#contact)
+1. [Three ways to use RNAtomy](#three-ways-to-use-rnatomy)
+2. [Installation](#installation)
+3. [Pretrained weights and data](#pretrained-weights-and-data)
+4. [Quick start: extract embeddings](#quick-start-extract-embeddings)
+5. [Preparing inputs for your own RNAs](#preparing-inputs-for-your-own-rnas)
+6. [Embedding space](#embedding-space)
+7. [Pretraining](#pretraining)
+8. [Downstream tasks](#downstream-tasks)
+9. [Results](#results)
+10. [Limitations](#limitations)
+11. [Repository layout](#repository-layout)
+12. [Citation](#citation)
+13. [License](#license)
+14. [Contact](#contact)
 
----
+## Three ways to use RNAtomy
 
-## Features
+The encoder is trained once and never changes for your task. What you do on top of it is a choice:
 
-- **Two structural modalities.** A 4-channel pairwise geometry map `X ∈ ℝ^{4×L×L}` and a 23-dimensional
-  residue-wise descriptor matrix `F ∈ ℝ^{L×23}`.
-- **Hybrid backbone.** 16 blocks, arranged as four groups of three bidirectional Mamba blocks followed by one
-  shifted-window attention block (12 Mamba + 4 attention), about 75M parameters.
-- **Axis-specific positional embeddings** for rows and columns, so directional orientation channels are
-  represented correctly.
-- **Modality dropout.** The 1D track can be withheld at pretraining time, so the encoder also runs with the
-  pairwise map alone.
-- **Four output modes** from one wrapper (`RNAEncoder`): `encode_pairs`, `encode_nucleotides`, `encode_tokens`, `encode_pooled`.
-- **Ready-made task heads** for all seven downstream tasks, with frozen, partially unfrozen or full fine-tuning.
-- **Length curriculum and shape-aware batching** for pairwise maps of very different sizes (50–1024 nt).
+| Setting | Backbone | What you train | Paper name | Use it when |
+|---|---|---|---|---|
+| **1. Embeddings** | frozen | nothing, or a scikit-learn model on the vectors | | you want features for clustering, retrieval or a quick baseline |
+| **2. Frozen backbone + light head** | frozen | a small task head | RNAtomy-FB | labels are scarce, or you want to test how much the embedding already knows |
+| **3. Full fine-tuning** | trainable | head and encoder together | RNAtomy | you have enough labels and want the best accuracy |
 
-## Repository layout
+Settings 2 and 3 are implemented by the scripts in [Downstream tasks](#downstream-tasks). Setting 1 is
+[`embed.py`](embed.py).
 
-```text
-RNAtomy/
-├── main_mine.py                  # self-supervised pretraining entry point
-├── engine.py  datasets.py  augment.py  utils.py
-├── models/
-│   ├── hybridnet.py              # Mamba + shifted-window attention backbone, FiLM, 1D encoder
-│   ├── rna_encoder.py            # RNAEncoder: loads a checkpoint and exposes encode_* outputs
-│   └── lm_encoders.py            # wrappers for baseline RNA language models
-├── finetune/                     # dataset classes and shared utilities for the downstream tasks
-├── rna_task_heads/               # stand-alone task heads (contact, RSA, LRBP, RRI, RBP, MRL, IRES)
-├── Final_extacting_dssr.py       # DSSR -> 23-d residue descriptors (feat1d_norm.npy)
-├── finetune_rsa.py               # solvent accessibility
-├── finetune_contact_map.py       # 3D contact maps
-├── finetune_lrbp.py              # long-range base pairs
-├── finetune_rri.py               # RNA-RNA interaction
-├── finetune_rna_protein.py       # RNA-protein binding (17 RBPs)
-├── finetune_utr_mrl.py           # 5'UTR mean ribosome load
-├── finetune_ires.py              # IRES identification
-├── visualization/                # embedding, attention and prediction figures
-└── assets/                       # figures used in this README
-```
+| Embedding level | Shape | Typical use |
+|---|---|---|
+| `pooled` | `[D]` | RNA-level tasks: family, function, regression on a whole RNA |
+| `nucleotide` | `[L, D]` | per-nucleotide tasks: accessibility, binding sites |
+| `pair` | `[L, L, D]` | pairwise tasks: contacts, base pairs |
 
 ## Installation
 
@@ -88,114 +88,201 @@ RNAtomy needs a CUDA GPU because the Mamba blocks use the `mamba_ssm` kernels.
 conda create -n rnatomy python=3.10 -y
 conda activate rnatomy
 
-# PyTorch matching your CUDA version: https://pytorch.org/get-started/locally/
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
+# PyTorch >= 2.0 matching your CUDA version: https://pytorch.org/get-started/locally/
+pip install torch --index-url https://download.pytorch.org/whl/cu121
 
-# Mamba kernels
+# Mamba kernels, then the remaining dependencies
 pip install causal-conv1d mamba-ssm
-
-# remaining dependencies
-pip install timm numpy scipy pandas scikit-learn matplotlib mlflow
+pip install -r requirements.txt
 ```
 
 DSSR is required only to compute the residue-wise descriptors for your own RNAs. It is distributed separately
 under its own licence: <http://x3dna.org/>.
 
-## Input features
+## Pretrained weights and data
 
-RNAtomy takes two files per RNA. Both are produced from a sequence (no experimental structure is needed).
+Weights and pretraining data are archived on Zenodo: **[10.5281/zenodo.23968854](https://doi.org/10.5281/zenodo.23968854)**
+(CC BY 4.0).
 
-| File | Shape | Content | Produced by |
-|---|---|---|---|
-| `<id>.npy` | `L × L × 4` | trRosettaRNA distance map and three orientation maps | [trRosettaRNA](https://yanglab.qd.sdu.edu.cn/trRosettaRNA/) |
-| `<id>/feat1d_norm.npy` | `L × 23` | sin/cos of 6 backbone torsions and χ, `ssZp`, `Dp`, 7 binary structural indicators | `Final_extacting_dssr.py` on a predicted 3D model |
+| File | Size | Contents |
+|---|---|---|
+| `rnatomy.pth` | 1.2 GB | pretrained RNAtomy checkpoint |
+| `fasta.zip` | 90.8 MB | sequences of the pretraining RNAs, one FASTA file per RNAcentral ID |
+| `1d_feats.zip` | 943.7 MB | residue-wise DSSR descriptors (`feat1d_norm.npy`) |
+| `2d_maps_examples.zip` | 101.1 MB | 70 example trRosettaRNA maps (`L × L × 4`) |
+
+Download commands, checksums and the file layout are in
+[`pretraining_model/pretrained_model/README.md`](pretraining_model/pretrained_model/README.md). Only `rnatomy.pth`
+is needed to use the model.
+
+## Quick start: extract embeddings
+
+```python
+import numpy as np
+from embed import load_encoder, embed
+
+enc = load_encoder("pretraining_model/pretrained_model/rnatomy.pth")
+
+pair_map = np.load("2d_maps_examples/_URS0000003E31.npy")        # [L, L, 4] trRosettaRNA maps
+feats = np.load("1d_feats/URS0000003E31/feat1d_norm.npy")        # [L, 23] DSSR descriptors
+
+rna = embed(enc, pair_map, feats, level="pooled")                # [768]
+nts = embed(enc, pair_map, feats, level="nucleotide")            # [L, 768]
+pairs = embed(enc, pair_map, feats, level="pair")                # [L, L, 768]
+
+rna_2d_only = embed(enc, pair_map, None, level="pooled")         # pairwise map alone, no descriptors
+```
+
+The same from the command line, for a folder of maps:
+
+```bash
+python embed.py --ckpt pretraining_model/pretrained_model/rnatomy.pth \
+    --maps 2d_maps_examples --feat1d-root 1d_feats --level pooled --out embeddings.npz
+```
+
+`embeddings.npz` holds `ids` and `embeddings` (`N × 768`). With `--level nucleotide` or `pair`, `--out` is a folder that
+receives one `<id>.npy` per RNA. Without `--feat1d-root` the encoder uses the pairwise map alone. Maps are
+normalized with the pretraining statistics inside `embed()`, so pass raw trRosettaRNA values. RNAs longer than
+1,024 nt are processed in overlapping windows whose outputs are averaged (not available for `pair`).
+
+For batched or trainable use, `models/rna_encoder.py` exposes the same four outputs with padding masks:
+`encode_pooled`, `encode_tokens`, `encode_pairs`, `encode_nucleotides`, plus `freeze()`,
+`unfreeze_last_n_blocks(n)` and `unfreeze_all()`.
+
+## Preparing inputs for your own RNAs
+
+RNAtomy needs only a sequence. Two files per RNA are derived from it by existing tools:
+
+| Step | Tool | Output |
+|---|---|---|
+| 1. Pairwise geometry | [trRosettaRNA](https://yanglab.qd.sdu.edu.cn/trRosettaRNA/) | `<id>.npy`, `L × L × 4`: one distance channel and three orientation channels (the orientations are directional, so the map is not symmetric) |
+| 2. Predicted 3D model | trRosettaRNA | a PDB file per RNA |
+| 3. Residue descriptors | DSSR on the model, via `Final_extacting_dssr.py` | `<id>/feat1d_norm.npy`, `L × 23` |
 
 ```bash
 # DSSR descriptors for every PDB in ./training_set (writes ./out/<RNA>/feat1d_norm.npy)
 python Final_extacting_dssr.py
 ```
 
+The 23 descriptors are, in column order: sine and cosine of the six backbone torsions α, β, γ, δ, ε, ζ (1–12) and of
+χ (13–14), the continuous phosphate descriptors `ssZp` and `Dp` (15–16), and seven binary indicators (17–23):
+`is_paired`, `in_stem`, `in_helix`, `in_junction`, `in_hairpin`, `in_bulge`, `in_iloop`.
+
+The descriptor track is optional at inference. The model was pretrained with modality dropout, so it runs on the
+pairwise map alone when DSSR output is not available.
+
 > **Provenance matters.** Both inputs should be computed from *predicted* structures. If a benchmark's
 > labels come from experimental structures (for example contact maps or solvent accessibility), do not derive the
-> 1D descriptors from those same experimental structures, or the label leaks into the input.
+> descriptors from those same experimental structures, or the label leaks into the input.
 
-## Quick start: use the encoder
+## Embedding space
 
-```python
-import numpy as np, torch
-from models.rna_encoder import build_encoder_from_checkpoint
+Mean-pooled RNAtomy embeddings, with no task training, organize RNAs by family. Left: nine structural families from
+ArchiveII. Middle and right: the 50 and 10 most populated Rfam 15.0 families. The projection is t-SNE, and
+families are used only to color the points.
 
-enc = build_encoder_from_checkpoint(
-    "checkpoints/rnatomy_pretrained.pth",   # see "Checkpoints and data"
-    patch_size=8, in_chans=4, embed_dim=768, depth=16, window_size=16, window_num_heads=12,
-    device="cuda",
-).eval()
+<img src="imgs/embed_families.png" alt="t-SNE of RNAtomy embeddings colored by RNA family" width="100%">
 
-MEAN = torch.tensor([28.472, 93.731, 89.640, -8.994])   # pretraining statistics (see --norm-mean / --norm-std)
-STD  = torch.tensor([6.018, 15.843, 22.327, 21.095])
-
-x = torch.from_numpy(np.load("assets/example/URS0000A0B8F6.npy")).float()   # [L, L, 4]
-x = (x - MEAN) / STD                       # per-channel z-score
-x = x.permute(2, 0, 1)[None].cuda()        # [1, 4, L, L]
-feats = torch.from_numpy(np.load("<id>/feat1d_norm.npy")).float()[None].cuda()   # [1, L, 23] from Final_extacting_dssr.py
-
-with torch.no_grad():
-    pair = enc.encode_pairs(x, nt_features=feats, seq_len=x.shape[-1])   # [1, L, L, D]  contact / distance maps
-    nt   = enc.encode_nucleotides(x, nt_features=feats)                 # [1, L, D]     per-nucleotide tasks
-    rna  = enc.encode_pooled(x, nt_features=feats)                      # [1, D]        whole-RNA tasks
-```
-
-The architecture arguments must match the checkpoint. Check the shapes printed by `build_encoder_from_checkpoint`,
-and read the module docstring of `models/rna_encoder.py` for the freezing helpers (`freeze`,
-`unfreeze_last_n_blocks`, `unfreeze_all`). To run without the residue-wise track, pass `feat1d_mode="none"`
-(this requires a checkpoint pretrained with modality dropout).
+<details>
+<summary><b>More Rfam subsets (top 100, 80, 60, 40, 20 and 10 families)</b></summary>
+<br>
+<img src="imgs/embed_top_families.png" alt="t-SNE of RNAtomy embeddings for the 100 to 10 most populated Rfam families" width="100%">
+</details>
 
 ## Pretraining
 
+**Data.** Sequences come from the RNAcentral active release (40.7M sequences). They were assigned to RNA categories by
+keyword matching, sampled to over-represent rarer classes, clustered with CD-HIT-EST at 95% identity (80% coverage),
+and filtered to 50–1,024 nt with complete structural features. The result is 200,158 RNAs, split 180,142 for
+training and 20,016 for validation.
+
+<details>
+<summary><b>RNA-type composition of the candidate collection (391,845 sequences before the length and quality filters)</b></summary>
+
+| RNA type | Source (%) | Revised count | Revised (%) |
+|---|---:|---:|---:|
+| rRNA | 56.47 | 149,542 | 38.16 |
+| tRNA | 14.72 | 84,014 | 21.44 |
+| lncRNA | 9.46 | 59,579 | 15.20 |
+| Other | 10.38 | 39,570 | 10.10 |
+| miRNA | 2.18 | 12,782 | 3.26 |
+| snoRNA | 1.45 | 8,759 | 2.24 |
+| ncRNA | 1.28 | 8,560 | 2.18 |
+| snRNA | 1.18 | 7,732 | 1.97 |
+| SRP RNA | 1.10 | 5,664 | 1.45 |
+| Ribozyme | 0.69 | 4,709 | 1.20 |
+| mRNA | 0.48 | 3,368 | 0.86 |
+| RNase RNA | 0.38 | 2,953 | 0.75 |
+| Antisense RNA | 0.15 | 1,854 | 0.47 |
+| Y RNA | 0.06 | 1,157 | 0.30 |
+| Vault RNA | < 0.01 | 834 | 0.21 |
+| Telomerase RNA | < 0.01 | 768 | 0.20 |
+
+</details>
+
+**Run.**
+
 ```bash
-python main_mine.py \
-    --data-path <dir with <id>.npy maps> --feat1d-root <dir with <id>/feat1d_norm.npy> \
-    --prot-patch-size 8 --depth 16 --mamba-ratio 3 \
-    --swin-embed-dim 768 --swin-window-size 16 --swin-num-heads 12 \
-    --mask-ratio-min 0.45 --mask-ratio-max 0.65 \
-    --recon-1d-weight 0.5 --recon-1d-mask-ratio 0.15 --recon-1d-span 4 --moddrop-prob 0.3 \
-    --length-curriculum --output_dir runs/pretrain
+torchrun --nproc_per_node 4 pretraining_model/pretrain.py \
+    --data-path <dir with train/ and val/ holding <id>.npy maps> \
+    --feat1d-root <dir with <id>/feat1d_norm.npy> \
+    --output_dir runs/pretrain
 ```
 
-Pretraining objective:
+The defaults of `pretrain.py` are the settings of the released model. Run `python pretraining_model/pretrain.py -h` for
+all options.
 
-```
-L = L_2D + λ_1D · L_1D        (λ_1D = 0.5)
-```
+| Setting | Value |
+|---|---|
+| Patch size / width / blocks | 8 × 8 / 768 / 16 |
+| Pairwise masking | ratio drawn from U(0.45, 0.65); signal-aware weights with α = 1.0 |
+| Residue-wise masking | 15% of nucleotides in spans of 4 |
+| Modality dropout | 0.3 (descriptor track withheld for the whole RNA) |
+| Loss weight | λ_1D = 0.5 |
+| Batch | 16 per GPU × 2 accumulation steps × 4 GPUs = 128 |
+| Optimizer | AdamW, peak learning rate 2e-4, weight decay 0.05, 20 warm-up epochs, cosine decay, gradient clip 1.0 |
+| Length curriculum | maximum length grows from the 40th to the 100th percentile over 30 epochs |
+| Batching | token-bucket batches with a length-adaptive token budget |
+| Precision / checkpoint | FP32; validation and checkpoint selection use EMA weights |
 
-- `L_2D` reconstructs standardized distance and orientation values of masked patches, with signal-aware weights so
-  background patches do not dominate.
-- `L_1D` reconstructs the 23 descriptors of masked spans (about 15% of nucleotides): circular losses for the
-  sin/cos torsions, a robust loss for continuous descriptors, binary cross-entropy for indicators.
-- Full optimizer settings, masking algorithms and ablations are in the paper's appendix; run
-  `python main_mine.py -h` for every option.
+The objective is `L = L_2D + λ_1D · L_1D`:
+
+- `L_2D` reconstructs the standardized distance and orientation values of masked patches, weighted so that patches with
+  a strong geometric signal are not drowned out by background.
+- `L_1D` reconstructs the 23 descriptors of masked spans: a cosine loss on the sine/cosine angles, a Huber loss on the
+  continuous descriptors and binary cross-entropy on the structural indicators.
+
+**Does the descriptor track matter?** On a homology-filtered held-out set of 1,323 RNAs, adding residue-wise
+conditioning lowers the pairwise-map reconstruction error at both widths, and the larger model helps both variants.
+
+| Configuration | Width | Parameters | Reconstruction MSE ↓ |
+|---|---:|---:|---:|
+| Pairwise only | 768 | 74.4M | 0.18 |
+| Pairwise only | 512 | 33.1M | 0.25 |
+| Pairwise + residue-wise | 768 | 75.6M | **0.11** |
+| Pairwise + residue-wise | 512 | 34.3M | 0.17 |
 
 ## Downstream tasks
 
-All task scripts share one pattern: load the pretrained encoder (`--pretrain-ckpt`), attach a task head, and
-train the head alone (`--freeze-backbone`), the last *n* blocks, or the full network. Validation picks the best
+Every task script loads the pretrained encoder (`--pretrain-ckpt`), attaches a task head, and trains the head alone
+(`--freeze-backbone`, RNAtomy-FB), the last *n* blocks, or the full network (RNAtomy). Validation picks the best
 epoch, and the test set is evaluated once.
 
-| # | Task | Script | Level | Metric |
-|---|---|---|---|---|
-| 1 | Solvent accessibility (RSA) | `finetune_rsa.py` | nucleotide | PCC, SCC, MAE (Å²) |
-| 2 | 3D contact maps | `finetune_contact_map.py` | nucleotide pair | long-range Top-L/k precision |
-| 3 | Long-range base pairs | `finetune_lrbp.py` | nucleotide pair | F1 (overall, pseudoknot classes, long-distance) |
-| 4 | RNA–RNA interaction | `finetune_rri.py` | RNA pair | accuracy, F1, AUC |
-| 5 | RNA–protein binding | `finetune_rna_protein.py` | nucleotide / RNA | AUROC, AUPRC |
-| 6 | 5′UTR ribosome load | `finetune_utr_mrl.py` | RNA | R² |
-| 7 | IRES identification | `finetune_ires.py` | RNA | accuracy, F1, MCC, AUROC |
+| # | Task | Script | Level | Benchmark | Metric |
+|---|---|---|---|---|---|
+| 1 | Solvent accessibility | `finetune_rsa.py` | nucleotide | RNAsol (TR89 / TS44) | PCC, SCC, MAE (Å²) |
+| 2 | 3D contact maps | `finetune_contact_map.py` | nucleotide pair | RNAcontact (TR221 / TE80) | long-range Top-L/k precision |
+| 3 | Long-range base pairs | `finetune_lrbp.py` | nucleotide pair | bpRNA-1m TR0, RNA-km protocol | F1 (overall, PK classes, long-distance) |
+| 4 | RNA–RNA interaction | `finetune_rri.py` | RNA pair | DeepMirTar / MirTarRAW | accuracy, F1, AUC |
+| 5 | RNA–protein binding | `finetune_rna_protein.py` | nucleotide / RNA | PrismNet, 17 HeLa RBPs | AUPRC |
+| 6 | 5′UTR ribosome load | `finetune_utr_mrl.py` | RNA | Optimus 5-Prime (Random / Human 7600) | R² |
+| 7 | IRES identification | `finetune_ires.py` | RNA | structRFM IRES set | accuracy, F1, MCC, AUROC |
 
 Example: contact-map prediction with a frozen backbone.
 
 ```bash
 python finetune_contact_map.py \
-    --pretrain-ckpt checkpoints/rnatomy_pretrained.pth \
+    --pretrain-ckpt pretraining_model/pretrained_model/rnatomy.pth \
     --train-split data/train.fasta --val-split data/val.fasta --test-split data/test.fasta \
     --train-npy-root data/train/npy --val-npy-root data/val/npy --test-npy-root data/test/npy \
     --train-feat1d-root data/train/dssr --val-feat1d-root data/val/dssr --test-feat1d-root data/test/dssr \
@@ -210,74 +297,92 @@ python finetune_contact_map.py \
 Re-evaluate a trained head without training: add `--resume runs/contact/checkpoint_best.pth --eval-only`.
 Every script documents its own arguments and data format at the top of the file (`python finetune_<task>.py -h`).
 
+Downstream benchmarks are public. Please cite the original benchmark papers when you use them.
+
 ## Results
 
-Selected numbers from the paper (see the paper for all baselines and for the frozen-backbone variant RNAtomy⁻).
+Selected numbers from the paper. **FB** is the frozen backbone with a light head, **FT** is full fine-tuning. See the
+paper for every baseline.
 
 | Task | Metric | RNAtomy | Best compared method |
 |---|---|---|---|
-| Solvent accessibility (TS44) | PCC / SCC / MAE | **0.51** / **0.43** / **33.8** | RNAsol 0.43 / 0.42 / 34.0 |
-| Contact map | Top-L/5 precision | **0.91** | RNAcontact 0.88, ERNIE-RNA attention-map 0.78 |
-| Long-range base pairs (TR0) | overall F1 / long-distance | **0.533** / **0.498** | RNA-km 0.527 / 0.228 |
-| RNA–RNA interaction (DeepMirTar) | F1 / AUC | 0.887 / 0.957 | RNAErnie 0.957 / 0.988 |
-| RNA–protein binding (17 RBPs) | mean AUPRC | 0.855 | ERNIE-RNA 0.865 |
-| 5′UTR ribosome load | R² (Random / Human 7600) | **0.95** / **0.88** | ERNIE-RNA-conv 0.92 / 0.86 |
-| IRES identification | AUROC / F1 | **0.75** / **0.73** | structRFM 0.71 / 0.70 |
+| Solvent accessibility (TS44) | PCC / SCC / MAE | **0.51** / **0.43** / **33.8** (FB) | RNAsol 0.43 / 0.42 / 34.0 |
+| Contact map | long-range precision, Top-L/10, L/5, L/2, L | **0.94 / 0.91 / 0.84 / 0.73** (FB) | strongest baseline lower by 5 / 3 / 3 / 7 points |
+| Long-range base pairs (TR0) | overall F1 / long-distance accuracy | **0.53** / **0.50** (FB) | RNA-km 0.52 / 0.23 |
+| RNA–RNA interaction | F1 / AUC | 0.876 / 0.915 (FB), 0.887 / 0.957 (FT) | RNAErnie 0.957 / 0.988 |
+| RNA–protein binding (17 RBPs) | mean AUPRC | 0.855 | ERNIE-RNA 0.865, RNA-FM 0.824 |
+| 5′UTR ribosome load | R² (Random / Human 7600) | 0.89 / 0.82 (FB), **0.95** / **0.88** (FT) | ERNIE-RNA-conv 0.92 / 0.86 |
+| IRES identification | AUROC / F1 | 0.64 / 0.64 (FB), **0.75** / **0.73** (FT) | highest AUROC and F1 among compared methods (FT) |
 
-<details open>
-<summary><b>Structural tasks</b></summary>
-<img src="assets/fig_results_structural.png" width="100%">
-</details>
-
-<details>
-<summary><b>Interaction tasks</b></summary>
-<img src="assets/fig_results_interaction.png" width="100%">
-</details>
-
-<details>
-<summary><b>Functional tasks</b></summary>
-<img src="assets/fig_results_functional.png" width="100%">
-</details>
+On the long-range base-pair benchmark RNA-km stays stronger on pseudoknot-free pairs (0.61 against 0.56). On RNA–RNA
+interaction RNAtomy has the highest recall (0.961) but lower precision than RNAErnie.
 
 ### Predicted contact maps
 
-Ten test RNAs, one drawn at random from each of ten equal-size length groups (fixed seed): ground truth on the left of
-each pair, RNAtomy prediction on the right. Only pairs with |i − j| ≥ 24 are labelled and scored.
+Ten RNAcontact test RNAs chosen by stratified random sampling over the length distribution, without looking at
+performance. For each pair, the ground truth is on the left and the RNAtomy contact probability on the right. Only
+pairs with |i − j| ≥ 24 are labelled and scored, so the signal near the diagonal is not part of the evaluation.
 
-<img src="assets/contact_gallery.png" width="100%">
+<img src="imgs/testset_gallery.png" alt="Ground-truth and predicted long-range contact maps for ten test RNAs" width="100%">
 
-## Interpreting the model
+## Limitations
 
-`visualization/` contains scripts that run a fine-tuned checkpoint on a test set and draw what it learned, without
-modifying any model code: predictions, PCA of patch embeddings across blocks, window attention of the four
-attention blocks, and per-head attention for a chosen patch.
+- **Static structure.** Each RNA is represented by one predicted pairwise map and one set of descriptors, so
+  conformational ensembles, ligand-induced changes and cellular conditions are not modelled.
+- **Predicted inputs.** The inputs come from trRosettaRNA and DSSR. Their errors propagate, and computing them is the
+  expensive step for a new RNA.
+- **Length range.** Pretraining used RNAs of 50–1,024 nt. Longer RNAs are handled by overlapping windows.
+- **Training distribution.** rRNA and tRNA make up about 60% of the candidate pretraining sequences.
+- **Scope of validation.** The model was evaluated on the seven tasks above only.
 
-<p align="center">
-<img src="assets/embedding_1gax_D.png" width="49%">
-<img src="assets/attention_1gax_D.png" width="49%">
-</p>
+See [`MODEL_CARD.md`](MODEL_CARD.md) for intended use and details.
 
-```bash
-python visualization/rnatomy_extract.py --run <run dir> --npy-root <maps> --feat1d-root <dssr> --out internals --verify
-python visualization/rnatomy_internals_plots.py dossier --internals internals --run <run dir> --ids 1gax_D --out figures
-python visualization/rnatomy_internals_plots.py testset --internals internals --run <run dir> --out figures
+## Repository layout
+
+```text
+RNAtomy/
+├── embed.py                      # embeddings from maps (+ descriptors): command line and Python API
+├── pretraining_model/
+│   ├── pretrain.py               # self-supervised pretraining
+│   ├── engine.py  datasets.py  utils.py
+│   └── pretrained_model/         # where to put rnatomy.pth (Zenodo link inside)
+├── models/
+│   ├── hybridnet.py              # Mamba + shifted-window attention backbone, FiLM, descriptor encoder
+│   ├── rna_encoder.py            # RNAEncoder: loads a checkpoint and exposes the encode_* outputs
+│   └── heads/                    # task heads: contact map, RSA, long-range BP, RRI, RBP, MRL, IRES
+├── finetune/                     # dataset classes, shared arguments, train/validation loops, IRES ensembling
+├── finetune_<task>.py            # one fine-tuning script per downstream task
+├── Final_extacting_dssr.py       # DSSR -> 23-d residue descriptors (feat1d_norm.npy)
+├── imgs/                         # figures used in this README
+├── MODEL_CARD.md
+└── requirements.txt
 ```
 
-Attention is local to a window of 16 × 16 patches (128 nt) and shifts by half a window in every second attention
-block, so for RNAs longer than 128 nt a patch attends only within its window.
+## Citation
 
-## Checkpoints and data
+If you use RNAtomy, please cite the paper and, if you use the weights or data, the Zenodo record:
 
-| Resource | Link |
-|---|---|
-| Pretrained RNAtomy encoder |  |
-| Fine-tuned task heads |  |
-| Example trRosettaRNA map (`URS0000A0B8F6`, `L × L × 4`) | `assets/example/` |
+```bibtex
+@article{shirali2026rnatomy,
+  title   = {RNAtomy: A Structure-Aware RNA Foundation Model for Transferable Structural and Functional Representations},
+  author  = {Shirali, Azam and Garg, Ishaan and Vasilyev, Andrey and Soni, Pavitra and Govindasamy, Parshatd and Mathee, Kalai and Chapagain, Prem and Narasimhan, Giri},
+  year    = {2026},
+  note    = {Preprint}
+}
 
-Downstream benchmarks are public: RNAsolvent/RNAsol (TR95/VL24/TS44), RNAcontact (ERNIE-RNA), bpRNA-1m and
-RNA-km (TR0), DeepMirTar, PrismNet (17 RBPs, HeLa), Optimus 5-Prime (Random/Human 7600) and the structRFM IRES set.
-Please cite the original benchmark papers when you use them.
+@misc{rnatomy_zenodo,
+  title     = {RNAtomy: pretrained weights and pretraining data},
+  author    = {Shirali, Azam and Garg, Ishaan and Vasilyev, Andrey and Soni, Pavitra and Govindasamy, Parshatd and Mathee, Kalai and Chapagain, Prem and Narasimhan, Giri},
+  year      = {2026},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.23968854}
+}
+```
 
+## License
+
+Code is released under the [MIT License](LICENSE). The weights and data on Zenodo are released under CC BY 4.0.
+DSSR, trRosettaRNA and the third-party benchmarks keep their own licences.
 
 ## Contact
 
@@ -285,3 +390,4 @@ Please cite the original benchmark papers when you use them.
 Sciences, Florida International University
 📧 [ashir018@fiu.edu](mailto:ashir018@fiu.edu)
 
+Correspondence: **Giri Narasimhan** · 📧 [giri@fiu.edu](mailto:giri@fiu.edu)
