@@ -151,16 +151,12 @@ The 23 descriptors are, in column order: sine and cosine of the six backbone tor
 χ (13–14), the continuous phosphate descriptors `ssZp` and `Dp` (15–16), and seven binary indicators (17–23):
 `is_paired`, `in_stem`, `in_helix`, `in_junction`, `in_hairpin`, `in_bulge`, `in_iloop`.
 
-The descriptor track is optional at inference. The model was pretrained with modality dropout, so it runs on the
-pairwise map alone when DSSR output is not available.
+The descriptor track is optional, and it runs on the pairwise map alone when DSSR output is not available.
 
-> **Provenance matters.** Both inputs should be computed from *predicted* structures. If a benchmark's
-> labels come from experimental structures (for example contact maps or solvent accessibility), do not derive the
-> descriptors from those same experimental structures, or the label leaks into the input.
 
 ## Embedding space
 
-Mean-pooled RNAtomy embeddings, with no task training, organize RNAs by family. Left: nine structural families from
+Mean-pooled RNAtomy embeddings organize RNAs by family. Left: nine structural families from
 ArchiveII. Middle and right: the 50 and 10 most populated Rfam 15.0 families. The projection is t-SNE, and
 families are used only to color the points.
 
