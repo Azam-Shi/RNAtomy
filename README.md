@@ -236,18 +236,15 @@ Application benchmarks are available [here](https://github.com/Andrey199123/RNA-
 
 ### Predicted contact maps
 
-Ten RNAcontact test RNAs chosen by stratified random sampling over the length distribution, without looking at
-performance. For each pair, the ground truth is on the left and the RNAtomy contact probability on the right. Only
-pairs with |i − j| ≥ 24 are labelled and scored, so the signal near the diagonal is not part of the evaluation.
-
 <img src="imgs/testset_gallery.png" alt="Ground-truth and predicted long-range contact maps for ten test RNAs" width="100%">
 
-
+Ten RNAcontact test RNAs were chosen by stratified random sampling over the length distribution. For each pair, the ground truth is on the left and the RNAtomy contact probability on the right. Only
+pairs with |i − j| ≥ 24 are labeled and scored, so the signal near the diagonal is not evaluated.
 
 ## License
 
 Code is released under the [MIT License](LICENSE). The weights and data on Zenodo are released under CC BY 4.0.
-DSSR, trRosettaRNA and the third-party benchmarks keep their own licenses.
+DSSR, trRosettaRNA, and the third-party benchmarks keep their own licenses.
 
 ## Contact
 
