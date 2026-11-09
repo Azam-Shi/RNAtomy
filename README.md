@@ -222,7 +222,6 @@ python finetune_contact_map.py \
     --train-npy-root data/train/npy --val-npy-root data/val/npy --test-npy-root data/test/npy \
     --train-feat1d-root data/train/dssr --val-feat1d-root data/val/dssr --test-feat1d-root data/test/dssr \
     --contact-root data/contact_maps \
-    --norm-mean "28.472,93.731,89.640,-8.994,0.0" --norm-std "6.018,15.843,22.327,21.095,1.0" \
     --head-input pair --focal-alpha 0.5 --focal-gamma 2.0 \
     --freeze-backbone --unfreeze-last-n-blocks 0 \
     --lr 1e-5 --epochs 200 --early-stop-patience 15 \
