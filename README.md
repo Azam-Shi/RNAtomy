@@ -29,7 +29,7 @@ Three design choices set it apart:
 
 ## Table of Contents
 
-1. [Three ways to use RNAtomy](#three-ways-to-use-rnatomy)
+1. [Different ways to use RNAtomy](#three-ways-to-use-rnatomy)
 2. [Installation](#installation)
 3. [Pretrained weights and data](#pretrained-weights-and-data)
 4. [Extract embeddings](#quick-start-extract-embeddings)
@@ -45,7 +45,7 @@ Three design choices set it apart:
 14. [Contact](#contact)
 
 
-## Three ways to use RNAtomy
+## Different ways to use RNAtomy
 
 The encoder is pretrained once and shared by all tasks. How it is used on top of that depends on the amount of
 labelled data and the accuracy required:
