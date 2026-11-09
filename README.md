@@ -77,13 +77,12 @@ pip install -r requirements.txt
 ```
 
 DSSR is required only to compute the residue-wise descriptors for your own RNAs. It is distributed separately
-under its own licence: <http://x3dna.org/>.
+under its own license: <http://x3dna.org/>.
 
 
 ## Pretrained weights and data
 
-Weights and pretraining data are archived on Zenodo: **[10.5281/zenodo.23968854](https://doi.org/10.5281/zenodo.23968854)**
-(CC BY 4.0).
+You can download the weights and pretraining data from Zenodo: **[10.5281/zenodo.23968854](https://doi.org/10.5281/zenodo.23968854)**.
 
 | File | Size | Contents |
 |---|---|---|
