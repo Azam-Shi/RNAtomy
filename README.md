@@ -93,8 +93,7 @@ You can download the weights and pretraining data from Zenodo: **[10.5281/zenodo
 | Complete 2D maps | ≈ 130 GB | pair-wise maps of the full pretraining set, available on request |
 
 **Complete pairwise maps.** The maps for the full pretraining set total about 130 GB, which exceeds the size limit of
-public archives such as Zenodo. To support re-pretraining, ablations, and reproduction of the reported results, we provide the complete maps on request at [ashir018@fiu.edu](mailto:ashir018@fiu.edu). The maps can also be regenerated from `fasta.zip` with
-[trRosettaRNA](https://yanglab.qd.sdu.edu.cn/trRosettaRNA/).
+public archives such as Zenodo. To support re-pretraining, ablations, and reproduction of the reported results, we provide the complete maps on request at [ashir018@fiu.edu](mailto:ashir018@fiu.edu). The maps can also be regenerated from `fasta.zip`.
 
 
 
