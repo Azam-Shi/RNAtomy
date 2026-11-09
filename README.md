@@ -24,7 +24,7 @@ Three design choices set it apart:
 1. **Joint masked reconstruction** of a pairwise geometry tensor and a residue-wise descriptor matrix (23 features per nucleotide), which ties spatial organization to local conformation.
 2. **A hybrid Mamba–Transformer backbone.** Bidirectional Mamba blocks carry context across the whole
    pairwise map, and shifted-window attention blocks add content-dependent interactions inside local regions
-   of the map, which Mamba alone does not model.
+   of the map.
 3. **Axis-aware feature-wise linear modulation.** Nucleotide-level conformations modulate the row and column axes of the pairwise tokens separately.
 
 ## Table of Contents
