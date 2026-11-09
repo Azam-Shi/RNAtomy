@@ -231,7 +231,7 @@ python finetune_contact_map.py \
 Re-evaluate a trained head without training: add `--resume runs/contact/checkpoint_best.pth --eval-only`.
 Every script documents its own arguments and data format at the top of the file (`python finetune_<task>.py -h`).
 
-Downstream benchmarks are public. Please cite the original benchmark papers when you use them.
+Application benchmarks are available [here](https://github.com/Andrey199123/RNA-Structural-and-Functional-Task-Datasets).
 
 
 ### Predicted contact maps
