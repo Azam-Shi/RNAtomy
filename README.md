@@ -21,9 +21,7 @@ frozen or fine-tuned, for structural, interaction, and functional tasks.
 
 Three design choices set it apart:
 
-1. **Joint masked reconstruction** of a pairwise geometry tensor (one distance and three orientation channels
-   from trRosettaRNA) and a residue-wise descriptor matrix (23 DSSR features per nucleotide), which ties
-   spatial organization to local conformation.
+1. **Joint masked reconstruction** of a pairwise geometry tensor and a residue-wise descriptor matrix (23 features per nucleotide), which ties spatial organization to local conformation.
 2. **A hybrid Mamba–Transformer backbone.** Bidirectional Mamba blocks carry context across the whole
    pairwise map, and shifted-window attention blocks add content-dependent interactions inside local regions
    of the map, which Mamba alone does not model.
