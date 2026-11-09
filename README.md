@@ -196,12 +196,6 @@ all options.
 | Batching | token-bucket batches with a length-adaptive token budget |
 | Precision / checkpoint | FP32; validation and checkpoint selection use EMA weights |
 
-The objective is `L = L_2D + λ_1D · L_1D`:
-
-- `L_2D` reconstructs the standardized distance and orientation values of masked patches, weighted so that patches with
-  a strong geometric signal are not drowned out by background.
-- `L_1D` reconstructs the 23 descriptors of masked spans: a cosine loss on the sine/cosine angles, a Huber loss on the
-  continuous descriptors and binary cross-entropy on the structural indicators.
 
 
 ## Applications
