@@ -53,8 +53,8 @@ labeled data and the accuracy required:
 | Setting | Backbone | Trained | Suitable when |
 |---|---|---|---|
 | **1. Embeddings** | frozen |   | features are needed for clustering, retrieval, or a quick baseline |
-| **2. Frozen backbone + light head** | frozen | a small task head | labels are scarce, or the goal is to measure how much the embedding already encodes |
-| **3. Full fine-tuning** | trainable | head and encoder together | enough labels are available, and the highest accuracy is needed |
+| **2. Frozen backbone + prediction head** | frozen | a lightweight task-specific head | labels are scarce, or the goal is to measure how much the embedding already encodes |
+| **3. Full fine-tuning** | trainable | task-specific head and encoder together | enough labels are available, and the highest accuracy is needed |
 
 Settings 2 and 3 are implemented by the scripts in [Applications](#applications). Setting 1 is
 [`embed.py`](embed.py).
