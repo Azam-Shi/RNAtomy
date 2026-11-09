@@ -27,8 +27,7 @@ Three design choices set it apart:
 2. **A hybrid Mamba–Transformer backbone.** Bidirectional Mamba blocks carry context across the whole
    pairwise map, and shifted-window attention blocks add content-dependent interactions inside local regions
    of the map, which Mamba alone does not model.
-3. **Axis-aware feature-wise linear modulation.** Nucleotide-level conformations modulate the row and column axes of the pairwise tokens
-   separately, so position (*i*, *j*) is distinguished from (*j*, *i*).
+3. **Axis-aware feature-wise linear modulation.** Nucleotide-level conformations modulate the row and column axes of the pairwise tokens separately.
 
 ## Table of Contents
 
