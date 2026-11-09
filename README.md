@@ -125,8 +125,8 @@ python embed.py --ckpt pretraining_model/pretrained_model/rnatomy.pth \
 
 `embeddings.npz` holds `ids` and `embeddings` (`N × 768`). With `--level nucleotide` or `pair`, `--out` is a folder that
 receives one `<id>.npy` per RNA. Without `--feat1d-root` the encoder uses the pairwise map alone. Maps are
-normalized with the pretraining statistics inside `embed()`, so pass raw trRosettaRNA values. RNAs longer than
-1,024 nt are processed in overlapping windows whose outputs are averaged (not available for `pair`).
+normalized with the pretraining statistics inside `embed()`. RNAs longer than
+1,024 nt are processed in overlapping windows whose outputs are averaged.
 
 For batched or trainable use, `models/rna_encoder.py` exposes the same four outputs with padding masks:
 `encode_pooled`, `encode_tokens`, `encode_pairs`, `encode_nucleotides`, plus `freeze()`,
