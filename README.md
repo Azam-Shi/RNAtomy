@@ -201,8 +201,7 @@ all options.
 ## Applications
 
 Every task script loads the pretrained encoder (`--pretrain-ckpt`), attaches a task head, and trains the head alone
-(`--freeze-backbone`, RNAtomy-FB), the last *n* blocks, or the full network (RNAtomy). Validation picks the best
-epoch, and the test set is evaluated once.
+(`--freeze-backbone`, RNAtomy-FB), or the full network (RNAtomy).
 
 | # | Task | Script | Level |
 |---|---|---|---|
