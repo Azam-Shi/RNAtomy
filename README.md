@@ -88,9 +88,9 @@ You can download the weights and pretraining data from Zenodo: **[10.5281/zenodo
 |---|---|---|
 | `rnatomy.pth` | 1.2 GB | pretrained RNAtomy checkpoint |
 | `fasta.zip` | 90.8 MB | sequences of the pretraining RNAs, one FASTA file per RNAcentral ID |
-| `1d_feats.zip` | 943.7 MB | residue-wise DSSR descriptors (`feat1d_norm.npy`) |
-| `2d_maps_examples.zip` | 101.1 MB | 70 example trRosettaRNA maps (`L × L × 4`) |
-| Complete 2D maps | ≈ 130 GB | trRosettaRNA maps of the full pretraining set, available on request |
+| `1d_feats.zip` | 943.7 MB | residue-wise descriptors (`feat1d_norm.npy`) |
+| `2d_maps_examples.zip` | 101.1 MB | 70 example pair-wise maps (`L × L × 4`) |
+| Complete 2D maps | ≈ 130 GB | pair-wise maps of the full pretraining set, available on request |
 
 **Complete pairwise maps.** The maps for the full pretraining set total about 130 GB, which exceeds the size limit of
 public archives such as Zenodo. To support re-pretraining, ablations, and reproduction of the reported results, we provide the complete maps on request at [ashir018@fiu.edu](mailto:ashir018@fiu.edu). The maps can also be regenerated from `fasta.zip` with
